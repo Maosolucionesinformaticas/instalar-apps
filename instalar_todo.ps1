@@ -53,6 +53,16 @@ foreach ($folder in $tempFolders) {
 }
 ipconfig /flushdns | Out-Null
 
+Write-Host "`n--- FASE 5: ACTUALIZACIONES DE WINDOWS ---" -ForegroundColor Cyan
+Write-Host "Buscando e instalando actualizaciones pendientes... Esto puede tardar."
+
+# Instala el módulo de actualización si no existe
+if (!(Get-Module -ListAvailable PSWindowsUpdate)) {
+    Install-Module PSWindowsUpdate -Force -Confirm:$false -SkipPublisherCheck
+}
+
+# Comando para descargar e instalar todo de forma silenciosa
+Get-WindowsUpdate -Install -AcceptAll -AutoReboot
 Write-Host "`n--- ¡PC CONFIGURADA Y OPTIMIZADA POR MAO SOLUCIONES INFORMATICAS! ---" -ForegroundColor White -BackgroundColor Blue
 Write-Host "Se recomienda reiniciar para aplicar todos los cambios."
 Pause
