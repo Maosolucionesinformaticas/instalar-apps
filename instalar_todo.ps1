@@ -54,15 +54,20 @@ foreach ($folder in $tempFolders) {
 ipconfig /flushdns | Out-Null
 
 Write-Host "`n--- FASE 5: ACTUALIZACIONES DE WINDOWS ---" -ForegroundColor Cyan
-Write-Host "Buscando e instalando actualizaciones... Esto puede tardar."
+Write-Host "Configurando entorno de actualización..."
 
-# Forzamos la instalación y la IMPORTACIÓN del módulo
+# 1. Instalamos el proveedor NuGet si falta
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Confirm:$false -ErrorAction SilentlyContinue
+
+# 2. Instalamos el módulo de actualizaciones
 Install-Module PSWindowsUpdate -Force -Confirm:$false -SkipPublisherCheck -ErrorAction SilentlyContinue
+
+# 3. LA CLAVE: Desbloqueamos el módulo para que Windows lo deje cargar
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+
+# 4. Importamos y ejecutamos
 Import-Module PSWindowsUpdate
-
-# Ahora sí, lanzamos la actualización
 Get-WindowsUpdate -Install -AcceptAll -AutoReboot
-
 # Comando para descargar e instalar todo de forma silenciosa
 Get-WindowsUpdate -Install -AcceptAll -AutoReboot
 Write-Host "`n--- ¡PC CONFIGURADA Y OPTIMIZADA POR MAO SOLUCIONES INFORMATICAS! ---" -ForegroundColor White -BackgroundColor Blue
