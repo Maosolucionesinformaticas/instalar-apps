@@ -54,12 +54,14 @@ foreach ($folder in $tempFolders) {
 ipconfig /flushdns | Out-Null
 
 Write-Host "`n--- FASE 5: ACTUALIZACIONES DE WINDOWS ---" -ForegroundColor Cyan
-Write-Host "Buscando e instalando actualizaciones pendientes... Esto puede tardar."
+Write-Host "Buscando e instalando actualizaciones... Esto puede tardar."
 
-# Instala el módulo de actualización si no existe
-if (!(Get-Module -ListAvailable PSWindowsUpdate)) {
-    Install-Module PSWindowsUpdate -Force -Confirm:$false -SkipPublisherCheck
-}
+# Forzamos la instalación y la IMPORTACIÓN del módulo
+Install-Module PSWindowsUpdate -Force -Confirm:$false -SkipPublisherCheck -ErrorAction SilentlyContinue
+Import-Module PSWindowsUpdate
+
+# Ahora sí, lanzamos la actualización
+Get-WindowsUpdate -Install -AcceptAll -AutoReboot
 
 # Comando para descargar e instalar todo de forma silenciosa
 Get-WindowsUpdate -Install -AcceptAll -AutoReboot
